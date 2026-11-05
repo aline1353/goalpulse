@@ -1,0 +1,9 @@
+# Netlify build settings for GoalPulse (Astro 4, static output).
+# Netlify reads this file from the repo: every commit (including saves
+# from the Decap editor at /admin) triggers a fresh build + deploy.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"

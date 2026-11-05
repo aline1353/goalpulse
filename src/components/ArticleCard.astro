@@ -1,0 +1,42 @@
+---
+// Card images: Pexels free stock photos, one per category, credited on
+// every card (see .card-credit) and in the site footer. No club logos or
+// copyrighted images are used. If a category is ever renamed, add its
+// image here — unknown categories fall back to the stadium photo.
+// An article's own image (set in the admin panel) wins over the category
+// photo; an uploaded image shows its credit without a Pexels suffix.
+const { article } = Astro.props;
+const IMAGES = {
+  'Football News': {
+    src: 'https://images.pexels.com/photos/14334478/pexels-photo-14334478.jpeg?auto=compress&w=1260&h=750&dpr=1',
+    credit: 'Francisco Medeiros',
+  },
+  'FPL Tips': {
+    src: 'https://images.pexels.com/photos/7307524/pexels-photo-7307524.jpeg?auto=compress&w=1260&h=750&dpr=1',
+    credit: 'Alexander Nadrilyanski',
+  },
+  'FPL Guides': {
+    src: 'https://images.pexels.com/photos/9519554/pexels-photo-9519554.jpeg?auto=compress&w=1260&h=750&dpr=1',
+    credit: 'Anastasia Shuraeva',
+  },
+};
+const img = article.image
+  ? { src: article.image, credit: article.imageCredit || '' }
+  : (IMAGES[article.category] ?? IMAGES['Football News']);
+const creditText = img.credit
+  ? (img.src.includes('pexels.com') ? `Photo: ${img.credit} / Pexels` : `Photo: ${img.credit}`)
+  : '';
+---
+
+<a class="card" href={`/${article.path}/${article.slug}/`}>
+  <div class="card-visual">
+    <img class="card-img" src={img.src} alt={article.title} loading="lazy" />
+    <span class="card-cat">{article.category}</span>
+  </div>
+  <div class="card-body">
+    <h3>{article.title}</h3>
+    <p>{article.excerpt}</p>
+    <div class="meta">{article.dateLabel}<span class="dot-sep">•</span>{article.readTime} min read</div>
+    {creditText && <div class="card-credit">{creditText}</div>}
+  </div>
+</a>

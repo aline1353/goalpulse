@@ -1,0 +1,24 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { byPath } from '../../lib/articles.ts';
+
+const tips = await byPath('fpl-tips');
+---
+
+<Layout
+  title="FPL Tips"
+  description="Fantasy Premier League tips from GoalPulse: gameweek checklists, captain frameworks, chip timing and deadline guides to help you climb your mini-league."
+  path="/fpl-tips/"
+>
+  <div class="wrap">
+    <div class="page-head">
+      <h1>FPL Tips</h1>
+      <p>Gameweek tips, captain frameworks and chip timing from GoalPulse — practical advice you can use before every deadline, plus a fresh gameweek preview each week of the season.</p>
+      <div class="page-count">{tips.length} published {tips.length === 1 ? 'article' : 'articles'}</div>
+    </div>
+    <div class="grid" style="padding-bottom: 56px;">
+      {tips.map((a) => <ArticleCard article={a} />)}
+    </div>
+  </div>
+</Layout>

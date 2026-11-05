@@ -1,0 +1,24 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { byPath } from '../../lib/articles.ts';
+
+const guides = await byPath('guides');
+---
+
+<Layout
+  title="FPL Guides"
+  description="Beginner-friendly Fantasy Premier League guides: how FPL works, scoring, chips, captain strategy, differentials, budget enablers and fixture difficulty."
+  path="/guides/"
+>
+  <div class="wrap">
+    <div class="page-head">
+      <h1>FPL Guides</h1>
+      <p>Learn Fantasy Premier League properly, from your first squad to advanced chip strategy. Every guide is written in plain English by the GoalPulse editors.</p>
+      <div class="page-count">{guides.length} published {guides.length === 1 ? 'article' : 'articles'}</div>
+    </div>
+    <div class="grid" style="padding-bottom: 56px;">
+      {guides.map((a) => <ArticleCard article={a} />)}
+    </div>
+  </div>
+</Layout>

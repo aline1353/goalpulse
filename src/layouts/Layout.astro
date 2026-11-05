@@ -1,0 +1,159 @@
+---
+import '../styles/global.css';
+
+// SEO: one canonical URL per page, computed here so no page needs editing.
+// SITE_URL must match `site` in astro.config.mjs exactly.
+// Domain owned by the owner: https://goalpulse.org (bought on Hostinger, Nov 2026)
+// before deploying; change both values together if the domain ever changes.
+const SITE_URL = 'https://goalpulse.org';
+const { title = 'GoalPulse — Football News & FPL Tips', description, path } = Astro.props;
+const rawPath = path ?? Astro.url.pathname;
+const pagePath = rawPath === '/' ? '/' : (rawPath.endsWith('/') ? rawPath : rawPath + '/');
+const canonical = new URL(pagePath, SITE_URL).href;
+const metaDescription = description || 'GoalPulse: original football news and Fantasy Premier League tips — gameweek guides, captain strategy, chip timing and beginner-friendly FPL explainers for fans in the UK, USA, Canada, Australia and Europe.';
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/news/', label: 'News' },
+  { href: '/fpl-tips/', label: 'FPL Tips' },
+  { href: '/guides/', label: 'Guides' },
+  { href: '/about/', label: 'About' },
+  { href: '/contact/', label: 'Contact' },
+];
+const current = pagePath;
+const isActive = (href: string) =>
+  href === '/' ? current === '/' : current === href || current.startsWith(href);
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'GoalPulse',
+  url: SITE_URL,
+  description: metaDescription,
+};
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title} | GoalPulse</title>
+<meta name="description" content={metaDescription} />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href={canonical} />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="GoalPulse" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={metaDescription} />
+<meta property="og:url" content={canonical} />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={metaDescription} />
+<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+<!-- Netlify Identity: the invite email links to the site root with
+     #invite_token — this widget catches it, opens the set-password box,
+     and sends a logged-in user to the editor. Without it the invite
+     link just loads the homepage and does nothing.
+     is:inline is required: without it Astro bundles the scripts and
+     the external widget tag disappears from the built page. -->
+<script is:inline src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script is:inline>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on('init', (user) => {
+      if (!user) {
+        window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
+      }
+    });
+  }
+</script>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <span><strong>GoalPulse</strong> — football news &amp; FPL tips</span>
+    <span>Independent fan site · UK, USA, Canada, Australia &amp; Europe · <span id="topbar-date"></span></span>
+  </div>
+</div>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="/">Goal<span class="pulse">Pulse</span></a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      {nav.map((item) => (
+        <a href={item.href} class={isActive(item.href) ? 'active' : undefined}>{item.label}</a>
+      ))}
+    </nav>
+    <button class="hamburger" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation">
+    {nav.map((item) => (
+      <a href={item.href}>{item.label}</a>
+    ))}
+  </nav>
+</header>
+
+<main>
+  <slot />
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <a class="footer-logo" href="/">Goal<span class="pulse">Pulse</span></a>
+      <p>An independent football newsroom. Every article on this site is written by our own editors — original match news, Fantasy Premier League tips and beginner-friendly guides for fans in the UK, USA, Canada, Australia and Europe.</p>
+      <p>GoalPulse is an independent fan site. It is not affiliated with, endorsed by, or connected to the Premier League or Fantasy Premier League.</p>
+    </div>
+    <div>
+      <h4>Sections</h4>
+      <ul>
+        <li><a href="/news/">Latest News</a></li>
+        <li><a href="/fpl-tips/">FPL Tips</a></li>
+        <li><a href="/guides/">FPL Guides</a></li>
+        <li><a href="/about/">About GoalPulse</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Information</h4>
+      <ul>
+        <li><a href="/contact/">Contact Us</a></li>
+        <li><a href="/privacy-policy/">Privacy Policy</a></li>
+        <li><a href="/about/">Editorial Standards</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© GoalPulse. All articles are original editorial content. Photos are Pexels free stock photos, credited on each story card and on the home hero image. No club logos or copyrighted images are used on this site.</div>
+</footer>
+
+<script>
+  const btn = document.getElementById('menu-btn');
+  const menu = document.getElementById('mobile-nav');
+  const dateEl = document.getElementById('topbar-date');
+  if (dateEl) {
+    dateEl.textContent = new Date().toLocaleDateString('en-GB', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    });
+  }
+  if (btn && menu) {
+    btn.addEventListener('click', () => {
+      const open = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    menu.querySelectorAll('a').forEach((a) =>
+      a.addEventListener('click', () => {
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      })
+    );
+  }
+  const form = document.getElementById('contact-form');
+  const done = document.getElementById('form-done');
+  if (form && done) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      form.style.display = 'none';
+      done.style.display = 'block';
+    });
+  }
+</script>
+</body>
+</html>

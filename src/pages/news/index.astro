@@ -1,0 +1,24 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { byPath } from '../../lib/articles.ts';
+
+const news = await byPath('news');
+---
+
+<Layout
+  title="Football News"
+  description="Original football news from GoalPulse: Premier League stories, title-race updates and the surprise packages of the 2026-27 season, written by our own editors."
+  path="/news/"
+>
+  <div class="wrap">
+    <div class="page-head">
+      <h1>Football News</h1>
+      <p>Original Premier League stories from the GoalPulse newsroom — title-race updates, surprise packages and the results that matter, with facts verified before publication.</p>
+      <div class="page-count">{news.length} published {news.length === 1 ? 'article' : 'articles'}</div>
+    </div>
+    <div class="grid" style="padding-bottom: 56px;">
+      {news.map((a) => <ArticleCard article={a} />)}
+    </div>
+  </div>
+</Layout>

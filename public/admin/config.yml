@@ -1,0 +1,29 @@
+# Decap CMS configuration — the online editor for GoalPulse.
+# Login runs through Netlify Identity + Git Gateway (enabled in the
+# Netlify site settings). Saving an article commits its Markdown file to
+# the GitHub repo, Netlify rebuilds the Astro site, and it goes live.
+# Nothing here needs a PC, VS Code, or a local build.
+backend:
+  name: git-gateway
+  branch: main
+site_url: https://goalpulse.org
+media_folder: public/uploads
+public_folder: /uploads
+collections:
+  - name: articles
+    label: Articles
+    folder: src/content/articles
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: slug, label: Slug, widget: string, hint: "URL ka aakhri hissa — sirf a-z, 0-9 aur -" }
+      - { name: section, label: Category, widget: select, options: [{ label: "Football News", value: "news" }, { label: "FPL Tips", value: "fpl-tips" }, { label: "FPL Guides", value: "guides" }] }
+      - { name: excerpt, label: Excerpt, widget: text, hint: "Cards par nazar aane wala mukhtasar summary" }
+      - { name: pubDate, label: Publish date, widget: date, format: "YYYY-MM-DD", hint: "Listings newest-first isi date se tartib hoti hain — naye article ke liye aaj ki date" }
+      - { name: dateLabel, label: Date label (site par nazar aayega), widget: string, hint: "Misaal: 5 November 2026" }
+      - { name: readTime, label: Read time (minutes), widget: number, value_type: int }
+      - { name: featured, label: Featured (home page hero), widget: boolean, default: false }
+      - { name: image, label: Image URL (khali chhorein to category photo lagegi), widget: string, required: false }
+      - { name: imageCredit, label: Image credit (photographer ka naam), widget: string, required: false }
+      - { name: body, label: Body, widget: markdown }

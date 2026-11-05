@@ -1,0 +1,89 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getAllArticles } from '../lib/articles.ts';
+import { imageFor } from '../lib/images.js';
+
+const articles = await getAllArticles();
+const featured = articles.find((a) => a.featured) ?? articles[0];
+const rest = articles.filter((a) => a.slug !== featured.slug);
+const latest = rest.slice(0, 6);
+const side = rest.slice(0, 4);
+const ticker = [featured, ...rest.slice(0, 4)];
+const fpl = articles.filter((a) => a.path === 'fpl-tips');
+const guides = articles.filter((a) => a.path === 'guides');
+// Hero image: the featured article's own image when the admin set one,
+// otherwise the night-match stock photo.
+const heroImg = featured.image
+  ? { src: featured.image, credit: featured.imageCredit || '' }
+  : { src: 'https://images.pexels.com/photos/31160103/pexels-photo-31160103/free-photo-of-night-football-match-at-mohammed-bin-zayed-stadium.jpeg?auto=compress&w=1260&h=750&dpr=1', credit: 'Eslam Mohammed Abdelmaksoud' };
+const heroCredit = heroImg.credit
+  ? (heroImg.src.includes('pexels.com') ? `Photo: ${heroImg.credit} / Pexels` : `Photo: ${heroImg.credit}`)
+  : '';
+const sideImg = (a) => (a.image ? { src: a.image } : imageFor(a.category));
+---
+
+<Layout
+  title="GoalPulse — Football News & FPL Tips"
+  description="GoalPulse: original football news and Fantasy Premier League tips — gameweek guides, captain strategy, chip timing and beginner-friendly FPL explainers for fans in the UK, USA, Canada, Australia and Europe."
+  path="/"
+>
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span class="ticker-label">LATEST</span>
+      {ticker.map((t) => (
+        <a href={`/${t.path}/${t.slug}/`}>{t.title}</a>
+      ))}
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="hero-grid">
+      <a class="hero-main" href={`/${featured.path}/${featured.slug}/`}>
+        <img class="hero-main-img" src={heroImg.src} alt={featured.title} />
+        <div class="hero-overlay">
+          <span class="kicker">{featured.category}</span>
+          <h2>{featured.title}</h2>
+          <p>{featured.excerpt}</p>
+          {heroCredit && <span class="hero-credit">{heroCredit}</span>}
+        </div>
+      </a>
+      <aside class="hero-side">
+        <h3 class="side-title">Top stories</h3>
+        {side.map((s) => (
+          <a class="side-item" href={`/${s.path}/${s.slug}/`}>
+            <img class="side-thumb" src={sideImg(s).src} alt="" loading="lazy" />
+            <div class="side-text">
+              <h4>{s.title}</h4>
+              <span>{s.category} · {s.dateLabel}</span>
+            </div>
+          </a>
+        ))}
+      </aside>
+    </section>
+
+    <div class="section-title">
+      <h2>Latest stories</h2>
+      <a href="/news/">All news →</a>
+    </div>
+    <div class="grid">
+      {latest.map((a) => <ArticleCard article={a} />)}
+    </div>
+
+    <div class="section-title">
+      <h2>FPL Tips</h2>
+      <a href="/fpl-tips/">More tips →</a>
+    </div>
+    <div class="grid">
+      {fpl.map((a) => <ArticleCard article={a} />)}
+    </div>
+
+    <div class="section-title">
+      <h2>FPL Guides</h2>
+      <a href="/guides/">More guides →</a>
+    </div>
+    <div class="grid">
+      {guides.map((a) => <ArticleCard article={a} />)}
+    </div>
+  </div>
+</Layout>

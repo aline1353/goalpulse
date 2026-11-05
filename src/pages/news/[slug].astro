@@ -1,0 +1,67 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+import { getAllArticles, CATEGORY_NAMES } from '../../lib/articles.ts';
+import { imageFor } from '../../lib/images.js';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('articles');
+  return entries.filter((e) => e.data.section === 'news').map((e) => ({ params: { slug: e.slug }, props: { entry: e } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const article = { ...entry.data, path: entry.data.section, category: CATEGORY_NAMES[entry.data.section] ?? entry.data.section };
+// Banner image: the article's own image when the admin set one,
+// otherwise the category stock photo.
+const img = article.image
+  ? { src: article.image, credit: article.imageCredit || '' }
+  : imageFor(article.category);
+const bannerCredit = img.credit
+  ? (img.src.includes('pexels.com') ? `Photo: ${img.credit} / Pexels` : `Photo: ${img.credit}`)
+  : '';
+const allArticles = await getAllArticles();
+const related = allArticles
+  .filter((a) => a.slug !== article.slug && a.path === 'news')
+  .concat(allArticles.filter((a) => a.slug !== article.slug && a.path !== 'news'))
+  .slice(0, 3);
+---
+
+<Layout
+  title={article.title}
+  description={article.excerpt}
+  path={`/news/${article.slug}/`}
+>
+  <div class="wrap">
+    <div class="article-hero">
+      <a class="crumb" href="/news/">← All news</a>
+      <div><span class="cat-badge">{article.category}</span></div>
+      <h1>{article.title}</h1>
+      <p class="standfirst">{article.excerpt}</p>
+      <div class="meta">{article.category}<span class="dot-sep">•</span>{article.dateLabel}<span class="dot-sep">•</span>{article.readTime} min read</div>
+    </div>
+    <div class="article-banner">
+      <img class="article-banner-img" src={img.src} alt={article.title} />
+    </div>
+    {bannerCredit && <p class="article-caption">{bannerCredit}</p>}
+    <article class="article-body">
+      <Content />
+    </article>
+    <p class="article-foot">
+      Published by GoalPulse editors. All articles on this site are original editorial content written for GoalPulse.
+      News items are published only after their facts have been verified; no scores, results, dates or quotes are invented.
+      GoalPulse is an independent fan site, not affiliated with, endorsed by, or connected to the Premier League or Fantasy Premier League.
+    </p>
+
+    <div class="related">
+      <div class="section-title">
+        <h2>Related stories</h2>
+        <a href="/news/">All news →</a>
+      </div>
+      <div class="grid">
+        {related.map((a) => <ArticleCard article={a} />)}
+      </div>
+    </div>
+  </div>
+</Layout>

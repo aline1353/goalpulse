@@ -1,0 +1,52 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Contact GoalPulse"
+  description="Contact GoalPulse: corrections, story suggestions and general questions about our football news and FPL tips."
+  path="/contact/"
+>
+  <div class="wrap">
+    <div class="page-head">
+      <h1>Contact Us</h1>
+      <p>Corrections, story suggestions or general questions — we read every message.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <h3>Before you write</h3>
+        <p>For a correction, please include the article title and the fact you believe is wrong, with a source if you have one. Verified corrections are published promptly.</p>
+        <p>For story suggestions, tell us the topic and why GoalPulse readers would care. We prioritise Premier League news and FPL strategy for UK, USA, Canadian, Australian and European fans.</p>
+        <p>Please note: the form on this page is a front-end demonstration. When the site is deployed, connect it to a form service (for example Formspree or Netlify Forms) and add the site owner email address here.</p>
+      </div>
+      <div>
+        <form id="contact-form">
+          <div class="form-field">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" required />
+          </div>
+          <div class="form-field">
+            <label for="email">Your email</label>
+            <input id="email" name="email" type="email" required />
+          </div>
+          <div class="form-field">
+            <label for="subject">Subject</label>
+            <input id="subject" name="subject" type="text" required />
+          </div>
+          <div class="form-field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="6" required></textarea>
+          </div>
+          <button class="btn" type="submit">Send message</button>
+          <p class="form-note">This demo form does not send email yet. Connect a form service on deployment to receive messages.</p>
+        </form>
+        <div id="form-done" style="display: none;">
+          <div class="contact-card">
+            <h3>Thank you</h3>
+            <p>Your message has been noted. In the deployed site this confirmation appears after the form service accepts your message.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
